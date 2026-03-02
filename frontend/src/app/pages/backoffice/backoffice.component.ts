@@ -24,6 +24,13 @@ import { AuthService } from '../../services/auth.service';
              [class.text-slate-500]="activeTab !== 'dashboard'"
              (click)="activeTab = 'dashboard'"
            >Dashboard</button>
+            <button 
+              class="px-6 rounded-xl transition-all duration-300 text-sm font-bold"
+              [class.bg-indigo-600]="activeTab === 'customers'"
+              [class.text-white]="activeTab === 'customers'"
+              [class.text-slate-500]="activeTab !== 'customers'"
+              (click)="activeTab = 'customers'"
+            >CRM & Sales</button>
            <button 
              class="px-6 rounded-xl transition-all duration-300 text-sm font-bold"
              [class.bg-indigo-600]="activeTab === 'orders'"
@@ -38,34 +45,60 @@ import { AuthService } from '../../services/auth.service';
       <div *ngIf="activeTab === 'dashboard'" class="space-y-12 animate-in zoom-in-95 duration-500">
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" *ngIf="stats()">
-          <div class="glass-card flex flex-col justify-between !p-8">
-            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Total Volume</span>
-            <div class="mt-4 flex items-end justify-between">
-              <span class="text-4xl font-black text-white">{{ stats().totalOrders }}</span>
-              <span class="text-xs text-indigo-400 italic">Orders</span>
-            </div>
-          </div>
           <div class="glass-card flex flex-col justify-between !p-8 border-l-4 border-indigo-500">
-            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Net Revenue</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Daily Revenue</span>
             <div class="mt-4 flex items-end justify-between">
-              <span class="text-3xl font-black text-indigo-400">฿{{ stats().totalRevenue | number:'1.0-0' }}</span>
-              <span class="text-xs text-slate-500">+12% vs LW</span>
+              <span class="text-3xl font-black text-indigo-400">฿{{ stats().dailyRevenue | number:'1.0-0' }}</span>
+              <span class="text-xs text-slate-500 italic">Today</span>
             </div>
           </div>
           <div class="glass-card flex flex-col justify-between !p-8 border-l-4 border-emerald-500">
-            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Paid Conversion</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Monthly Revenue</span>
             <div class="mt-4 flex items-end justify-between">
-              <span class="text-4xl font-black text-emerald-400">{{ stats().paidOrders }}</span>
-              <span class="text-xs text-slate-500">Success</span>
+              <span class="text-3xl font-black text-emerald-400">฿{{ stats().monthlyRevenue | number:'1.0-0' }}</span>
+              <span class="text-xs text-slate-500 italic">This Month</span>
+            </div>
+          </div>
+          <div class="glass-card flex flex-col justify-between !p-8 border-l-4 border-amber-500">
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Yearly Revenue</span>
+            <div class="mt-4 flex items-end justify-between">
+              <span class="text-3xl font-black text-amber-500">฿{{ stats().yearlyRevenue | number:'1.0-0' }}</span>
+              <span class="text-xs text-slate-500 italic">This Year</span>
             </div>
           </div>
           <div class="glass-card flex flex-col justify-between !p-8 border-l-4 border-pink-500">
-            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Active Base</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Total Revenue</span>
             <div class="mt-4 flex items-end justify-between">
-              <span class="text-4xl font-black text-pink-500">{{ stats().totalCustomers }}</span>
-              <span class="text-xs text-slate-500">Clients</span>
+              <span class="text-3xl font-black text-pink-500">฿{{ stats().totalRevenue | number:'1.0-0' }}</span>
+              <span class="text-xs text-slate-500 italic">Grand Total</span>
             </div>
           </div>
+        </div>
+
+        <!-- Secondary Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" *ngIf="stats()">
+           <div class="glass-card !p-8 flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Total Orders</p>
+                <p class="text-3xl font-black text-white">{{ stats().totalOrders }}</p>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </div>
+           </div>
+           <div class="glass-card !p-8 flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Total Customers</p>
+                <p class="text-3xl font-black text-white">{{ stats().totalCustomers }}</p>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+           </div>
         </div>
 
         <!-- System Message -->
@@ -106,7 +139,7 @@ import { AuthService } from '../../services/auth.service';
                 <td class="px-8 py-6">
                   <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-300">
-                      {{ order.design.user.name.charAt(0) }}
+                      {{ (order.design.user.name || 'U').charAt(0) }}
                     </div>
                     <div>
                       <div class="text-sm font-bold text-slate-200">{{ order.design.user.name }}</div>
@@ -134,6 +167,41 @@ import { AuthService } from '../../services/auth.service';
                   </select>
                 </td>
               </tr>
+              <tr *ngIf="orders().length === 0">
+                <td colspan="5" class="px-8 py-12 text-center text-slate-500 italic">No orders found.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CUSTOMERS TAB -->
+      <div *ngIf="activeTab === 'customers'" class="glass-card !p-0 overflow-hidden animate-in zoom-in-95 duration-500">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="bg-white/5 text-xs uppercase font-bold tracking-widest text-slate-400 border-b border-white/5">
+              <tr>
+                <th class="px-8 py-5">Customer info</th>
+                <th class="px-8 py-5">Phone</th>
+                <th class="px-8 py-5">Registered</th>
+                <th class="px-8 py-5">Activity</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              <tr *ngFor="let customer of customers()" class="hover:bg-white/5 transition-colors">
+                <td class="px-8 py-6">
+                  <div class="text-sm font-bold text-slate-200">{{ customer.name }}</div>
+                  <div class="text-[10px] text-slate-500 italic">{{ customer.email }}</div>
+                </td>
+                <td class="px-8 py-6 text-sm text-slate-300">{{ customer.phone || 'N/A' }}</td>
+                <td class="px-8 py-6 text-sm text-slate-500">{{ customer.created_at | date:'mediumDate' }}</td>
+                <td class="px-8 py-6">
+                  <span class="text-xs font-bold text-slate-300">{{ customer._count?.designs }} Designs Created</span>
+                </td>
+              </tr>
+              <tr *ngIf="customers().length === 0">
+                <td colspan="4" class="px-8 py-12 text-center text-slate-500 italic">No customers found.</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -152,6 +220,7 @@ export class BackofficeComponent implements OnInit {
   activeTab = 'dashboard';
   stats = signal<any>(null);
   orders = signal<any[]>([]);
+  customers = signal<any[]>([]);
 
   ngOnInit() {
     this.dashboardService.getStats().subscribe(res => {
@@ -159,6 +228,9 @@ export class BackofficeComponent implements OnInit {
     });
     this.orderService.getAll().subscribe(res => {
       if (res.success) this.orders.set(res.data);
+    });
+    this.dashboardService.getCustomers().subscribe(res => {
+      if (res.success) this.customers.set(res.data);
     });
   }
 

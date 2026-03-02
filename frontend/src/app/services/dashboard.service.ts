@@ -12,4 +12,8 @@ export class DashboardService {
     getStats() {
         return this.http.get<any>(`${this.apiUrl}/stats`);
     }
+
+    getCustomers() {
+        return this.http.get<any>(`${this.apiUrl}/customers`);
+    }
 }
