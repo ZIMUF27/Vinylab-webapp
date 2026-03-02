@@ -12,4 +12,13 @@ export class DashboardController {
             res.status(500).json({ success: false, message: error.message });
         }
     }
+
+    async getCustomers(req: Request, res: Response) {
+        try {
+            const customers = await dashboardService.getCustomerData();
+            res.json({ success: true, data: customers });
+        } catch (error: any) {
+            res.status(500).json({ success: false, message: error.message });
+        }
+    }
 }

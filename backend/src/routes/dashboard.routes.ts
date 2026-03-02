@@ -7,5 +7,6 @@ const router = Router();
 const dashboardController = new DashboardController();
 
 router.get('/stats', authenticateJWT, roleGuard(['admin']), dashboardController.getStats);
+router.get('/customers', authenticateJWT, roleGuard(['admin']), dashboardController.getCustomers);
 
 export default router;
