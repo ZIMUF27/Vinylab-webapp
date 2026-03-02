@@ -1,0 +1,139 @@
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { DesignService } from '../../services/design.service';
+import { OrderService } from '../../services/order.service';
+
+@Component({
+  selector: 'app-order-confirm',
+  standalone: true,
+  imports: [CommonModule, RouterLink],
+  template: `
+    <div class="max-w-3xl mx-auto px-6 py-12 animate-in fade-in duration-700" *ngIf="design">
+      <!-- Breadcrumbs -->
+      <nav class="flex mb-8 text-sm text-slate-500 font-medium italic">
+        <span>Template</span>
+        <span class="mx-3">→</span>
+        <span>Design</span>
+        <span class="mx-3">→</span>
+        <span class="text-indigo-400">Order Confirmation</span>
+      </nav>
+
+      <div class="glass-card !p-0 overflow-hidden">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-indigo-600 to-indigo-800 p-10 text-white">
+          <h1 class="text-3xl font-black mb-2">Order Review</h1>
+          <p class="opacity-80">Please check your configuration before proceeding to payment.</p>
+        </div>
+
+        <div class="p-10 space-y-10">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <!-- Left Side: Design Preview -->
+            <div class="space-y-6">
+                <p class="text-xs uppercase font-bold tracking-widest text-slate-500">Design Summary</p>
+                <div 
+                  class="w-full aspect-video rounded-xl flex items-center justify-center p-4 border border-white/5 shadow-inner"
+                  [style.backgroundColor]="design.color"
+                >
+                  <span class="text-white text-xl font-bold text-center break-words mix-blend-difference">
+                    {{ design.text_content }}
+                  </span>
+                </div>
+                <div class="flex justify-between text-sm italic text-slate-400">
+                  <span>Size: {{ design.width }}cm x {{ design.height }}cm</span>
+                  <span>Color Code: {{ design.color }}</span>
+                </div>
+            </div>
+
+            <!-- Right Side: Order Items -->
+            <div class="space-y-6">
+              <p class="text-xs uppercase font-bold tracking-widest text-slate-500">Item Details</p>
+              
+              <div class="space-y-4">
+                <div class="flex justify-between items-center py-2 border-b border-slate-700/50">
+                  <span class="text-slate-300">Base Template</span>
+                  <span class="font-bold">{{ design.template.name }}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-slate-700/50">
+                  <span class="text-slate-300">Material</span>
+                  <span class="text-indigo-400">{{ design.template.material_type }}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-slate-700/50">
+                   <span class="text-slate-300">Total Area</span>
+                   <span class="font-bold">{{ design.width * design.height }} cm²</span>
+                </div>
+               
+                <div class="flex justify-between items-center pt-6">
+                  <span class="text-2xl font-bold">Total Price</span>
+                  <span class="text-3xl font-black text-indigo-400">฿{{ design.price_calculated | number:'1.2-2' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex flex-col sm:flex-row gap-4 pt-6">
+            <button 
+              class="btn btn-primary flex-grow py-5 text-lg font-black group"
+              (click)="placeOrder()" 
+              [disabled]="loading"
+            >
+              <span *ngIf="!loading">Confirm & Proceed to Payment</span>
+              <span *ngIf="loading">Creating Order...</span>
+              <svg *ngIf="!loading" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </button>
+            <a [routerLink]="['/design', design.template.id]" class="btn btn-outline py-5">
+              Change Design
+            </a>
+          </div>
+
+          <div class="text-center p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500" *ngIf="error">
+            {{ error }}
+          </div>
+        </div>
+      </div>
+      
+      <p class="text-center mt-8 text-slate-500 text-sm italic">
+        * Orders are final once payment is completed. Printing takes 1-3 business days.
+      </p>
+    </div>
+  `
+})
+export class OrderConfirmComponent implements OnInit {
+  design: any;
+  loading = false;
+  error = '';
+
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private designService = inject(DesignService);
+  private orderService = inject(OrderService);
+
+  ngOnInit() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.designService.getById(id).subscribe(res => {
+        if (res.success) this.design = res.data;
+      });
+    }
+  }
+
+  placeOrder() {
+    this.loading = true;
+    this.error = '';
+
+    this.orderService.create(this.design.id).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.router.navigate(['/payment', res.data.id]);
+        }
+      },
+      error: (err) => {
+        this.error = err.error?.message || 'Failed to place order';
+        this.loading = false;
+      }
+    });
+  }
+}

@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  customer
+  staff
+  admin
+}
+
+enum DesignStatus {
+  draft
+  ordered
+}
+
+enum OrderStatus {
+  pending_payment
+  paid
+  printing
+  completed
+  shipped
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  phone         String?
+  password_hash String
+  role          Role     @default(customer)
+  created_at    DateTime @default(now())
+  designs       Design[]
+}
+
+model Template {
+  id            String   @id @default(uuid())
+  name          String
+  min_width     Float
+  max_width     Float
+  min_height    Float
+  max_height    Float
+  base_price    Float
+  material_type String
+  designs       Design[]
+}
+
+model Design {
+  id               String       @id @default(uuid())
+  user_id          String
+  template_id      String
+  width            Float
+  height           Float
+  color            String
+  text_content     String
+  design_file      String?
+  price_calculated Float
+  status           DesignStatus @default(draft)
+  user             User         @relation(fields: [user_id], references: [id])
+  template         Template     @relation(fields: [template_id], references: [id])
+  order            Order?
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  design_id   String      @unique
+  total_price Float
+  status      OrderStatus @default(pending_payment)
+  created_at  DateTime    @default(now())
+  design      Design      @relation(fields: [design_id], references: [id])
+  payment     Payment?
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  order_id       String        @unique
+  amount         Float
+  payment_method String
+  payment_slip   String?
+  payment_time   DateTime      @default(now())
+  payment_status PaymentStatus @default(pending)
+  order          Order         @relation(fields: [order_id], references: [id])
+}
+
+model Shop {
+  id        String @id @default(uuid())
+  shop_name String
+  phone     String
+  address   String
+  tax_id    String
+}
