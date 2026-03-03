@@ -1,4 +1,6 @@
 export const environment = {
     production: true,
-    apiUrl: '/api' // Use relative path for production, assuming Vercel rewrite or same-domain deployment
+    apiUrl: '/api',
+    supabaseUrl: 'https://ujuidurksnimiyzmrsbp.supabase.co',
+    supabaseKey: 'sb_publishable_bPvhySqVgsITu-D1uZraHQ_Qthgz-gU'
 };
