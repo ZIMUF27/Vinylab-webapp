@@ -41,12 +41,12 @@ import { RouterLink } from '@angular/router';
 
           <!-- Headline -->
           <div class="animate-fade-up delay-100" style="text-align:center;max-width:820px;">
-            <h1 style="font-size:clamp(2.75rem,8vw,5.5rem);font-weight:900;line-height:1.05;letter-spacing:-0.03em;margin-bottom:1.5rem;">
+            <h1 class="text-v-dark" style="font-size:clamp(2.75rem,8vw,5.5rem);font-weight:900;line-height:1.05;letter-spacing:-0.03em;margin-bottom:1.5rem;">
               Design
               <span class="gradient-text-primary"> Signs</span><br>
               <span class="gradient-text-pink" style="font-style:italic;">That Speak.</span>
             </h1>
-            <p style="font-size:1.2rem;color:#94a3b8;line-height:1.7;max-width:560px;margin:0 auto 2.5rem;">
+            <p class="text-v-secondary dark:text-slate-400 font-bold" style="font-size:1.2rem;line-height:1.7;max-width:560px;margin:0 auto 2.5rem;">
               Premium custom banners, decals, and signage for bold brands.
               Start your design in seconds with our real-time editor.
             </p>
@@ -65,17 +65,17 @@ import { RouterLink } from '@angular/router';
 
           <!-- Stats Row -->
           <div class="animate-fade-up delay-200" style="display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center;margin-top:1rem;">
-            <div style="text-align:center;padding:1rem 2rem;border-right:1px solid rgba(255,255,255,0.08);">
+            <div style="text-align:center;padding:1rem 2rem;border-right:1px solid var(--border-subtle);">
               <div class="gradient-text-primary" style="font-size:1.75rem;font-weight:900;">500+</div>
-              <div style="font-size:0.8rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Templates</div>
+              <div class="text-v-muted dark:text-slate-500" style="font-size:0.8rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;">Templates</div>
             </div>
-            <div style="text-align:center;padding:1rem 2rem;border-right:1px solid rgba(255,255,255,0.08);">
+            <div style="text-align:center;padding:1rem 2rem;border-right:1px solid var(--border-subtle);">
               <div class="gradient-text-primary" style="font-size:1.75rem;font-weight:900;">10k+</div>
-              <div style="font-size:0.8rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Orders Fulfilled</div>
+              <div class="text-v-muted dark:text-slate-500" style="font-size:0.8rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;">Orders Fulfilled</div>
             </div>
             <div style="text-align:center;padding:1rem 2rem;">
               <div class="gradient-text-primary" style="font-size:1.75rem;font-weight:900;">99%</div>
-              <div style="font-size:0.8rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Satisfaction</div>
+              <div class="text-v-muted dark:text-slate-500" style="font-size:0.8rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;">Satisfaction</div>
             </div>
           </div>
         </div>
@@ -86,8 +86,8 @@ import { RouterLink } from '@angular/router';
     <section style="padding:6rem 0;">
       <div class="page-container">
         <div style="text-align:center;margin-bottom:4rem;">
-          <h2 class="section-title" style="margin-bottom:1rem;">The VinylLab Standard</h2>
-          <p style="color:#64748b;max-width:560px;margin:0 auto;line-height:1.7;font-weight:500;">
+          <h2 class="section-title text-v-dark" style="margin-bottom:1rem;">The VinylLab Standard</h2>
+          <p class="text-v-muted dark:text-slate-500" style="max-width:560px;margin:0 auto;line-height:1.7;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;">
             Premium Printing. Simplified Workflow. Professional Results.
           </p>
         </div>
@@ -107,8 +107,8 @@ import { RouterLink } from '@angular/router';
                 <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
               </svg>
             </div>
-            <h3 style="font-size:1.15rem;font-weight:700;margin-bottom:0.75rem;color:#f1f5f9;">Real-time Customizer</h3>
-            <p style="color:#64748b;font-size:0.9rem;line-height:1.7;">
+            <h3 class="text-v-dark dark:text-slate-100" style="font-size:1.15rem;font-weight:900;margin-bottom:0.75rem;">Real-time Customizer</h3>
+            <p class="text-v-secondary dark:text-slate-400 font-bold" style="font-size:0.9rem;line-height:1.7;">
               Adjust dimensions, colors, and text while instantly seeing your final product and dynamic pricing.
             </p>
           </div>
@@ -126,8 +126,8 @@ import { RouterLink } from '@angular/router';
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
             </div>
-            <h3 style="font-size:1.15rem;font-weight:700;margin-bottom:0.75rem;color:#f1f5f9;">Enterprise Security</h3>
-            <p style="color:#64748b;font-size:0.9rem;line-height:1.7;">
+            <h3 class="text-v-dark dark:text-slate-100" style="font-size:1.15rem;font-weight:900;margin-bottom:0.75rem;">Enterprise Security</h3>
+            <p class="text-v-secondary dark:text-slate-400 font-bold" style="font-size:0.9rem;line-height:1.7;">
               Full JWT authentication and role-based access control. Your designs and data are always protected.
             </p>
           </div>
@@ -145,8 +145,8 @@ import { RouterLink } from '@angular/router';
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
               </svg>
             </div>
-            <h3 style="font-size:1.15rem;font-weight:700;margin-bottom:0.75rem;color:#f1f5f9;">Extreme Performance</h3>
-            <p style="color:#64748b;font-size:0.9rem;line-height:1.7;">
+            <h3 class="text-v-dark dark:text-slate-100" style="font-size:1.15rem;font-weight:900;margin-bottom:0.75rem;">Extreme Performance</h3>
+            <p class="text-v-secondary dark:text-slate-400 font-bold" style="font-size:0.9rem;line-height:1.7;">
               Optimized printing queue and fulfillment system designed for high-concurrency order management.
             </p>
           </div>
@@ -175,10 +175,10 @@ import { RouterLink } from '@angular/router';
           <div class="badge badge-pink" style="margin-bottom:1.5rem;">
             ✦ New Material Available
           </div>
-          <h2 style="font-size:clamp(1.75rem,4vw,2.75rem);font-weight:900;letter-spacing:-0.02em;margin-bottom:1rem;">
+          <h2 class="text-v-dark" style="font-size:clamp(1.75rem,4vw,2.75rem);font-weight:900;letter-spacing:-0.02em;margin-bottom:1rem;">
             Now printing on Premium <span class="gradient-text-primary">PVC Vinyl</span>
           </h2>
-          <p style="color:#94a3b8;max-width:520px;margin:0 auto 2.5rem;line-height:1.7;">
+          <p class="text-v-secondary dark:text-slate-400 font-black" style="max-width:520px;margin:0 auto 2.5rem;line-height:1.7;">
             Weather-resistant, vibrant colours, and long-lasting adhesive. Perfect for outdoor signs, vehicle wraps, and storefronts.
           </p>
           <a routerLink="/templates" class="btn btn-primary" style="padding:1rem 3rem;font-size:1rem;">

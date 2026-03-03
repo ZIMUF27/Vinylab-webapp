@@ -9,8 +9,8 @@ const orderController = new OrderController();
 router.post('/', authenticateJWT, orderController.create);
 router.get('/my', authenticateJWT, orderController.getMyOrders);
 
-// Staff and Admin
-router.get('/', authenticateJWT, roleGuard(['staff', 'admin']), orderController.getAll);
-router.patch('/:id/status', authenticateJWT, roleGuard(['staff', 'admin']), orderController.updateStatus);
+// Staff, Admin, and Dev
+router.get('/', authenticateJWT, roleGuard(['staff', 'admin', 'dev']), orderController.getAll);
+router.patch('/:id/status', authenticateJWT, roleGuard(['staff', 'admin', 'dev']), orderController.updateStatus);
 
 export default router;

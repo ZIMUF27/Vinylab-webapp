@@ -38,6 +38,6 @@ export const routes: Routes = [
     {
         path: 'backoffice',
         component: BackofficeComponent,
-        canActivate: [authGuard, roleGuard(['admin', 'staff'])]
+        canActivate: [authGuard, roleGuard(['admin', 'staff', 'dev'])]
     }
 ];

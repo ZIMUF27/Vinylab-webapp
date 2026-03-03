@@ -11,12 +11,12 @@ import { OrderService } from '../../services/order.service';
   template: `
     <div class="max-w-3xl mx-auto px-6 py-12 animate-in fade-in duration-700" *ngIf="design">
       <!-- Breadcrumbs -->
-      <nav class="flex mb-8 text-sm text-slate-500 font-medium italic">
+      <nav class="flex mb-8 text-sm text-v-muted dark:text-slate-500 font-black italic uppercase tracking-wider">
         <span>Template</span>
         <span class="mx-3">→</span>
         <span>Design</span>
         <span class="mx-3">→</span>
-        <span class="text-indigo-400">Order Confirmation</span>
+        <span class="text-indigo-600 dark:text-indigo-400">Order Confirmation</span>
       </nav>
 
       <div class="glass-card !p-0 overflow-hidden">
@@ -30,7 +30,7 @@ import { OrderService } from '../../services/order.service';
           <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
             <!-- Left Side: Design Preview -->
             <div class="space-y-6">
-                <p class="text-xs uppercase font-bold tracking-widest text-slate-500">Design Summary</p>
+                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-v-muted">Design Summary</p>
                 <div 
                   class="w-full aspect-video rounded-xl flex items-center justify-center p-4 border border-white/5 shadow-inner"
                   [style.backgroundColor]="design.color"
@@ -39,33 +39,33 @@ import { OrderService } from '../../services/order.service';
                     {{ design.text_content }}
                   </span>
                 </div>
-                <div class="flex justify-between text-sm italic text-slate-400">
-                  <span>Size: {{ design.width }}cm x {{ design.height }}cm</span>
-                  <span>Color Code: {{ design.color }}</span>
+                <div class="flex justify-between text-xs italic text-v-muted dark:text-slate-400 font-black uppercase tracking-tight">
+                  <span>Size: <span class="text-v-secondary">{{ design.width }}cm x {{ design.height }}cm</span></span>
+                  <span>Color: <span class="text-v-secondary">{{ design.color }}</span></span>
                 </div>
             </div>
 
             <!-- Right Side: Order Items -->
             <div class="space-y-6">
-              <p class="text-xs uppercase font-bold tracking-widest text-slate-500">Item Details</p>
+              <p class="text-[10px] uppercase font-black tracking-[0.2em] text-v-muted">Item Details</p>
               
               <div class="space-y-4">
-                <div class="flex justify-between items-center py-2 border-b border-slate-700/50">
-                  <span class="text-slate-300">Base Template</span>
-                  <span class="font-bold">{{ design.template.name }}</span>
+                <div class="flex justify-between items-center py-2 border-b border-slate-200 dark:border-slate-800">
+                  <span class="text-v-muted dark:text-slate-300 font-black">Base Template</span>
+                  <span class="font-black text-v-secondary">{{ design.template.name }}</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-slate-700/50">
-                  <span class="text-slate-300">Material</span>
-                  <span class="text-indigo-400">{{ design.template.material_type }}</span>
+                <div class="flex justify-between items-center py-2 border-b border-slate-200 dark:border-slate-800">
+                  <span class="text-v-muted dark:text-slate-300 font-black">Material</span>
+                  <span class="text-indigo-700 dark:text-indigo-400 font-black">{{ design.template.material_type }}</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-slate-700/50">
-                   <span class="text-slate-300">Total Area</span>
-                   <span class="font-bold">{{ design.width * design.height }} cm²</span>
+                <div class="flex justify-between items-center py-2 border-b border-slate-200 dark:border-slate-800">
+                   <span class="text-v-muted dark:text-slate-300 font-black">Total Area</span>
+                   <span class="font-black text-v-secondary">{{ design.width * design.height }} cm²</span>
                 </div>
                
                 <div class="flex justify-between items-center pt-6">
-                  <span class="text-2xl font-bold">Total Price</span>
-                  <span class="text-3xl font-black text-indigo-400">฿{{ design.price_calculated | number:'1.2-2' }}</span>
+                  <span class="text-2xl font-black text-v-dark">Total Price</span>
+                  <span class="text-3xl font-black text-amount-neutral">฿{{ design.price_calculated | number:'1.2-2' }}</span>
                 </div>
               </div>
             </div>
@@ -95,7 +95,7 @@ import { OrderService } from '../../services/order.service';
         </div>
       </div>
       
-      <p class="text-center mt-8 text-slate-500 text-sm italic">
+      <p class="text-center mt-8 text-v-muted text-sm italic font-black">
         * Orders are final once payment is completed. Printing takes 1-3 business days.
       </p>
     </div>

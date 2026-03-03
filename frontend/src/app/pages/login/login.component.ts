@@ -9,28 +9,28 @@ import { Router, RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
-    <div class="min-h-screen flex items-center justify-center p-6 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-950 to-slate-950">
-      <div class="glass-card w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div class="min-h-screen flex items-center justify-center p-6 bg-transparent">
+      <div class="glass-card w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-700 shadow-2xl">
         <div class="text-center mb-10">
-          <h2 class="section-title mb-2">Welcome Back</h2>
-          <p class="text-slate-400">Login to manage your sign designs</p>
+          <h2 class="section-title text-v-dark dark:text-white mb-2">Welcome Back</h2>
+          <p class="text-v-secondary dark:text-slate-400 font-bold">Login to manage your sign designs</p>
         </div>
 
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
           <div class="space-y-2">
-            <label class="text-sm font-medium text-slate-300">Email Address</label>
-            <input type="email" formControlName="email" class="form-input" placeholder="name@company.com">
-            <div *ngIf="f['email'].touched && f['email'].invalid" class="text-red-400 text-xs">
+            <label class="text-sm font-black text-v-muted dark:text-slate-300">Email Address</label>
+            <input type="email" formControlName="email" class="form-input text-v-secondary dark:text-white" placeholder="name@company.com">
+            <div *ngIf="f['email'].touched && f['email'].invalid" class="text-red-500 dark:text-red-400 text-xs font-bold">
               Please enter a valid email
             </div>
           </div>
 
           <div class="space-y-2">
             <div class="flex justify-between">
-              <label class="text-sm font-medium text-slate-300">Password</label>
-              <a href="#" class="text-xs text-indigo-400 hover:text-indigo-300">Forgot password?</a>
+              <label class="text-sm font-black text-v-muted dark:text-slate-300">Password</label>
+              <a href="#" class="text-xs text-indigo-700 dark:text-indigo-400 hover:text-indigo-300 font-bold">Forgot password?</a>
             </div>
-            <input type="password" formControlName="password" class="form-input" placeholder="••••••••">
+            <input type="password" formControlName="password" class="form-input text-v-secondary dark:text-white" placeholder="••••••••">
           </div>
 
           <button type="submit" class="btn btn-primary w-full py-4 mt-4" [disabled]="loginForm.invalid || loading">
@@ -45,9 +45,9 @@ import { Router, RouterLink } from '@angular/router';
             {{ error }}
           </div>
           
-          <p class="text-center text-slate-400 text-sm">
+          <p class="text-center text-v-muted dark:text-slate-400 text-sm font-bold">
             Don't have an account? 
-            <a routerLink="/register" class="text-indigo-400 font-semibold hover:underline">Create one here</a>
+            <a routerLink="/register" class="text-indigo-700 dark:text-indigo-400 font-black hover:underline">Create one here</a>
           </p>
         </form>
       </div>
@@ -78,7 +78,7 @@ export class LoginComponent {
     this.authService.login(this.loginForm.value).subscribe({
       next: () => this.router.navigate(['/']),
       error: (err) => {
-        this.error = err.error?.message || 'Login failed. Please check your credentials.';
+        this.error = err.message || 'Login failed. Please check your credentials.';
         this.loading = false;
       }
     });

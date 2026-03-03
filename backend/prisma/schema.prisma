@@ -11,6 +11,7 @@ enum Role {
   customer
   staff
   admin
+  dev
 }
 
 enum DesignStatus {
@@ -37,7 +38,7 @@ model User {
   name          String
   email         String   @unique
   phone         String?
-  password_hash String
+  password_hash String?
   role          Role     @default(customer)
   created_at    DateTime @default(now())
   designs       Design[]

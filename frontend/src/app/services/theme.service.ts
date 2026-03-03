@@ -19,6 +19,7 @@ export class ThemeService {
             const t = this.theme();
             if (isPlatformBrowser(this.platformId)) {
                 document.documentElement.setAttribute('data-theme', t);
+                document.documentElement.classList.toggle('dark', t === 'dark');
                 localStorage.setItem('vl-theme', t);
             }
         });

@@ -1,49 +1,70 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import { from, Observable, of } from 'rxjs';
+import { map, tap, catchError } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    private apiUrl = `${environment.apiUrl}/auth`;
-    currentUser = signal<any>(null);
+    private supabase: SupabaseClient;
+    currentUser = signal<User | null>(null);
 
-    constructor(private http: HttpClient, private router: Router) {
-        try {
-            const user = localStorage.getItem('user');
-            if (user) {
-                this.currentUser.set(JSON.parse(user));
+    constructor(private router: Router) {
+        this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+
+        // Check current session
+        this.supabase.auth.getSession().then(({ data: { session } }) => {
+            this.currentUser.set(session?.user ?? null);
+        });
+
+        // Listen for auth changes
+        this.supabase.auth.onAuthStateChange((_event, session) => {
+            this.currentUser.set(session?.user ?? null);
+            if (!session) {
+                this.router.navigate(['/login']);
             }
-        } catch (e) {
-            console.error('Error parsing user from localStorage', e);
-            localStorage.removeItem('user');
-        }
+        });
     }
 
-    register(data: any) {
-        return this.http.post(`${this.apiUrl}/register`, data);
-    }
-
-    login(credentials: any) {
-        return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
-            tap(res => {
-                if (res.success) {
-                    localStorage.setItem('token', res.token);
-                    localStorage.setItem('user', JSON.stringify(res.user));
-                    this.currentUser.set(res.user);
+    register(data: any): Observable<any> {
+        return from(this.supabase.auth.signUp({
+            email: data.email,
+            password: data.password,
+            options: {
+                data: {
+                    full_name: data.name,
+                    phone: data.phone,
+                    role: 'customer'
                 }
+            }
+        })).pipe(
+            map(res => {
+                if (res.error) throw res.error;
+                return res.data;
+            })
+        );
+    }
+
+    login(credentials: any): Observable<any> {
+        return from(this.supabase.auth.signInWithPassword({
+            email: credentials.email,
+            password: credentials.password
+        })).pipe(
+            map(res => {
+                if (res.error) throw res.error;
+                return { success: true, user: res.data.user, token: res.data.session?.access_token };
             })
         );
     }
 
     logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        this.currentUser.set(null);
-        this.router.navigate(['/login']);
+        this.supabase.auth.signOut().then(() => {
+            this.currentUser.set(null);
+            this.router.navigate(['/login']);
+        });
     }
 
     isLoggedIn() {
@@ -52,6 +73,22 @@ export class AuthService {
 
     hasRole(roles: string[]) {
         const user = this.currentUser();
-        return user && roles.includes(user.role);
+        let userRole = (user?.user_metadata as any)?.role || 'customer';
+
+        // Custom Logic: If email is the dev email, grant dev role
+        if (user?.email === 'poo2461p@gmail.com') {
+            userRole = 'dev';
+        }
+
+        return user && roles.includes(userRole);
+    }
+
+    getUserName(): string {
+        const user = this.currentUser();
+        return (user?.user_metadata as any)?.full_name || user?.email?.split('@')[0] || 'User';
+    }
+
+    getToken(): Promise<string | null> {
+        return this.supabase.auth.getSession().then(res => res.data.session?.access_token || null);
     }
 }

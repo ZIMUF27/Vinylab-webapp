@@ -6,7 +6,7 @@ import { roleGuard } from '../middleware/role.guard';
 const router = Router();
 const dashboardController = new DashboardController();
 
-router.get('/stats', authenticateJWT, roleGuard(['admin']), dashboardController.getStats);
-router.get('/customers', authenticateJWT, roleGuard(['admin']), dashboardController.getCustomers);
+router.get('/stats', authenticateJWT, roleGuard(['admin', 'staff', 'dev']), dashboardController.getStats);
+router.get('/customers', authenticateJWT, roleGuard(['admin', 'staff', 'dev']), dashboardController.getCustomers);
 
 export default router;

@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 
         <!-- Logo -->
         <a routerLink="/" class="navbar-logo">
-          Vinyl<span style="font-weight:300;color:#94a3b8;-webkit-text-fill-color:#94a3b8;">Lab</span>
+          Vinyl<span class="text-v-muted dark:text-slate-400" style="font-weight:300;">Lab</span>
         </a>
 
         <!-- Desktop Links -->
@@ -35,7 +35,7 @@ import { CommonModule } from '@angular/common';
                 My Orders
               </a>
             </li>
-            <ng-container *ngIf="authService.hasRole(['admin','staff'])">
+            <ng-container *ngIf="authService.hasRole(['admin','staff','dev'])">
               <li>
                 <a routerLink="/backoffice" routerLinkActive="active" class="navbar-link navbar-link--admin">
                   Backoffice
@@ -87,8 +87,8 @@ import { CommonModule } from '@angular/common';
           </button>
 
           <ng-container *ngIf="authService.isLoggedIn(); else guestButtons">
-            <span class="text-sm italic hidden lg:block" style="color:var(--nav-link-color);">
-              Hi, {{ authService.currentUser()?.name }}
+            <span class="text-sm italic hidden lg:block text-v-secondary dark:text-slate-300">
+              Hi, {{ authService.getUserName() }}
             </span>
             <div style="width:1px;height:24px;background:var(--nav-divider);" class="hidden lg:block"></div>
             <button (click)="authService.logout()" class="btn btn-outline" style="padding:0.5rem 1.25rem;font-size:0.8125rem;">
@@ -140,12 +140,11 @@ import { CommonModule } from '@angular/common';
           </button>
 
           <!-- Hamburger -->
-          <button class="flex flex-col gap-1.5 p-2 rounded-lg transition-colors"
-                  style="background:rgba(255,255,255,0.04);"
+          <button class="flex flex-col gap-1.5 p-2 rounded-lg transition-colors bg-slate-100 dark:bg-white/5"
                   (click)="mobileOpen.set(!mobileOpen())">
-            <span class="block w-5 h-0.5 bg-slate-300 transition-all" [class.rotate-45]="mobileOpen()" [class.translate-y-2]="mobileOpen()"></span>
-            <span class="block w-5 h-0.5 bg-slate-300 transition-all" [class.opacity-0]="mobileOpen()"></span>
-            <span class="block w-5 h-0.5 bg-slate-300 transition-all" [class.-rotate-45]="mobileOpen()" [class.-translate-y-2]="mobileOpen()"></span>
+            <span class="block w-5 h-0.5 bg-v-secondary transition-all" [class.rotate-45]="mobileOpen()" [class.translate-y-2]="mobileOpen()"></span>
+            <span class="block w-5 h-0.5 bg-v-secondary transition-all" [class.opacity-0]="mobileOpen()"></span>
+            <span class="block w-5 h-0.5 bg-v-secondary transition-all" [class.-rotate-45]="mobileOpen()" [class.-translate-y-2]="mobileOpen()"></span>
           </button>
         </div>
       </div>
@@ -157,7 +156,7 @@ import { CommonModule } from '@angular/common';
         <a routerLink="/templates" (click)="mobileOpen.set(false)" class="navbar-link block">Templates</a>
         <ng-container *ngIf="authService.isLoggedIn()">
           <a routerLink="/my-orders" (click)="mobileOpen.set(false)" class="navbar-link block">My Orders</a>
-          <ng-container *ngIf="authService.hasRole(['admin','staff'])">
+          <ng-container *ngIf="authService.hasRole(['admin','staff','dev'])">
             <a routerLink="/backoffice" (click)="mobileOpen.set(false)" class="navbar-link block navbar-link--admin">Backoffice</a>
           </ng-container>
           <div class="divider"></div>

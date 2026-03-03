@@ -15,8 +15,8 @@ import { DesignService } from '../../services/design.service';
       <!-- Mobile: Header + Sidebar Toggle -->
       <div class="flex items-center justify-between mb-4 lg:hidden">
         <div>
-          <h1 class="text-lg font-bold text-white">{{ template.name }}</h1>
-          <p class="text-xs text-slate-400">{{ template.material_type }}</p>
+          <h1 class="text-lg font-black text-v-dark dark:text-white">{{ template.name }}</h1>
+          <p class="text-xs text-v-muted dark:text-slate-400 font-bold">{{ template.material_type }}</p>
         </div>
         <button
           (click)="sidebarOpen = !sidebarOpen"
@@ -56,12 +56,12 @@ import { DesignService } from '../../services/design.service';
               </span>
 
               <!-- Width indicator -->
-              <div class="absolute -bottom-8 left-0 right-0 text-center text-indigo-400 text-xs font-mono">
+              <div class="absolute -bottom-8 left-0 right-0 text-center text-v-muted dark:text-indigo-400 text-xs font-black">
                 &#8596; {{ designForm.get('width')?.value }}cm
               </div>
               <!-- Height indicator -->
               <div class="absolute -right-10 top-0 bottom-0 flex items-center">
-                <span class="text-indigo-400 text-xs font-mono" style="writing-mode: vertical-rl; transform: rotate(180deg);">
+                <span class="text-v-muted dark:text-indigo-400 text-xs font-black" style="writing-mode: vertical-rl; transform: rotate(180deg);">
                   &#8597; {{ designForm.get('height')?.value }}cm
                 </span>
               </div>
@@ -71,13 +71,13 @@ import { DesignService } from '../../services/design.service';
           <!-- Price Bar -->
           <div class="glass-card !py-5 !px-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Estimated Price</p>
-              <p class="text-3xl md:text-4xl font-black text-indigo-400">฿{{ calculatePrice() | number:'1.2-2' }}</p>
+              <p class="text-v-muted dark:text-slate-400 text-xs font-black uppercase tracking-widest mb-1">Estimated Price</p>
+              <p class="text-3xl md:text-4xl font-black text-amount-green">฿{{ calculatePrice() | number:'1.2-2' }}</p>
             </div>
             <div class="text-left sm:text-right space-y-1">
-              <p class="text-slate-500 text-xs">Base rate: <span class="text-slate-300">{{ template.base_price }}/cm²</span></p>
-              <p class="text-slate-500 text-xs">Material: <span class="text-slate-300">{{ template.material_type }}</span></p>
-              <p class="text-slate-500 text-xs">Area: <span class="text-slate-300">{{ designForm.get('width')?.value }} × {{ designForm.get('height')?.value }} cm</span></p>
+              <p class="text-v-muted dark:text-slate-500 text-xs font-bold">Base rate: <span class="text-v-secondary dark:text-slate-300">{{ template.base_price }}/cm²</span></p>
+              <p class="text-v-muted dark:text-slate-500 text-xs font-bold">Material: <span class="text-v-secondary dark:text-slate-300">{{ template.material_type }}</span></p>
+              <p class="text-v-muted dark:text-slate-500 text-xs font-bold">Area: <span class="text-v-secondary dark:text-slate-300">{{ designForm.get('width')?.value }} × {{ designForm.get('height')?.value }} cm</span></p>
             </div>
           </div>
         </div>
@@ -90,18 +90,18 @@ import { DesignService } from '../../services/design.service';
           <div class="glass-card !p-6 lg:sticky lg:top-6">
 
             <!-- Sidebar Header (desktop only) -->
-            <div class="hidden lg:block mb-6">
-              <h2 class="text-xl font-bold">Personalize Sign</h2>
-              <p class="text-slate-400 text-xs mt-1">{{ template.name }}</p>
+            <div class="hidden lg:block mb-6 text-v-dark dark:text-white">
+              <h2 class="text-xl font-black">Personalize Sign</h2>
+              <p class="text-v-muted dark:text-slate-400 text-xs mt-1 font-bold">{{ template.name }}</p>
             </div>
 
             <form [formGroup]="designForm" class="space-y-5">
 
               <!-- Width -->
               <div class="space-y-2">
-                <label class="text-sm font-medium text-slate-300 flex justify-between items-center">
+                <label class="text-sm font-black text-v-muted dark:text-slate-300 flex justify-between items-center">
                   <span>Width (cm)</span>
-                  <span class="text-indigo-400 text-xs bg-indigo-500/10 px-2 py-0.5 rounded-full">
+                  <span class="text-v-secondary dark:text-indigo-400 text-xs bg-indigo-500/10 px-2 py-0.5 rounded-full font-black">
                     {{ template.min_width }}–{{ template.max_width }}
                   </span>
                 </label>
@@ -114,9 +114,9 @@ import { DesignService } from '../../services/design.service';
 
               <!-- Height -->
               <div class="space-y-2">
-                <label class="text-sm font-medium text-slate-300 flex justify-between items-center">
+                <label class="text-sm font-black text-v-muted dark:text-slate-300 flex justify-between items-center">
                   <span>Height (cm)</span>
-                  <span class="text-indigo-400 text-xs bg-indigo-500/10 px-2 py-0.5 rounded-full">
+                  <span class="text-v-secondary dark:text-indigo-400 text-xs bg-indigo-500/10 px-2 py-0.5 rounded-full font-black">
                     {{ template.min_height }}–{{ template.max_height }}
                   </span>
                 </label>
@@ -129,22 +129,22 @@ import { DesignService } from '../../services/design.service';
 
               <!-- Color -->
               <div class="space-y-2">
-                <label class="text-sm font-medium text-slate-300">Background Color</label>
-                <div class="flex gap-3 items-center p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                <label class="text-sm font-black text-v-muted dark:text-slate-300">Background Color</label>
+                <div class="flex gap-3 items-center p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700/50 text-v-secondary dark:text-white">
                   <input type="color" formControlName="color"
                          class="w-14 h-14 bg-transparent border-0 cursor-pointer p-0 rounded-lg">
                   <div>
-                    <p class="text-xs font-mono text-slate-300">{{ designForm.get('color')?.value }}</p>
-                    <p class="text-xs text-slate-500 mt-1">Click to pick color</p>
+                    <p class="text-xs font-black font-mono text-v-secondary dark:text-slate-300">{{ designForm.get('color')?.value }}</p>
+                    <p class="text-xs text-v-muted dark:text-slate-500 mt-1 font-bold">Click to pick color</p>
                   </div>
                 </div>
               </div>
 
               <!-- Text Content -->
               <div class="space-y-2">
-                <label class="text-sm font-medium text-slate-300">Sign Text</label>
+                <label class="text-sm font-black text-v-muted dark:text-slate-300">Sign Text</label>
                 <textarea formControlName="text_content"
-                          class="form-input !h-28 resize-none"
+                          class="form-input !h-28 resize-none text-v-secondary dark:text-white"
                           placeholder="Type your sign text..."></textarea>
               </div>
 

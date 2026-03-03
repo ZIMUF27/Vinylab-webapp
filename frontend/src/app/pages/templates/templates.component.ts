@@ -11,7 +11,7 @@ import { RouterLink } from '@angular/router';
     <div class="max-w-7xl mx-auto px-6 py-12">
       <div class="mb-12">
         <h1 class="section-title mb-4">Design Templates</h1>
-        <p class="text-slate-400 max-w-2xl">Select a base template for your custom sign. Every template specifies width/height constraints and material quality.</p>
+        <p class="text-v-secondary dark:text-slate-400 max-w-2xl font-bold">Select a base template for your custom sign. Every template specifies width/height constraints and material quality.</p>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" *ngIf="templates().length > 0; else skeleton">
@@ -19,7 +19,7 @@ import { RouterLink } from '@angular/router';
           <!-- Card Header & Body -->
           <div class="flex-grow">
             <div class="flex justify-between items-start mb-6">
-              <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 text-xs font-bold rounded-full uppercase tracking-wider">
+              <span class="px-3 py-1 bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 text-xs font-bold rounded-full uppercase tracking-wider">
                 {{ template.material_type }}
               </span>
               <div class="text-indigo-400">
@@ -29,16 +29,16 @@ import { RouterLink } from '@angular/router';
               </div>
             </div>
 
-            <h3 class="text-xl font-bold mb-3 group-hover:text-indigo-400 transition-colors">{{ template.name }}</h3>
+            <h3 class="text-xl font-black mb-3 text-v-dark dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{{ template.name }}</h3>
             
             <div class="space-y-3 mb-8">
-              <div class="flex items-center text-sm text-slate-400">
-                <span class="w-32 font-medium">Width Range:</span>
-                <span class="text-slate-200">{{ template.min_width }}cm - {{ template.max_width }}cm</span>
+              <div class="flex items-center text-sm">
+                <span class="w-32 font-black text-v-muted dark:text-slate-400">Width Range:</span>
+                <span class="text-v-secondary dark:text-slate-200 font-black">{{ template.min_width }}cm - {{ template.max_width }}cm</span>
               </div>
-              <div class="flex items-center text-sm text-slate-400">
-                <span class="w-32 font-medium">Height Range:</span>
-                <span class="text-slate-200">{{ template.min_height }}cm - {{ template.max_height }}cm</span>
+              <div class="flex items-center text-sm">
+                <span class="w-32 font-black text-v-muted dark:text-slate-400">Height Range:</span>
+                <span class="text-v-secondary dark:text-slate-200 font-black">{{ template.min_height }}cm - {{ template.max_height }}cm</span>
               </div>
             </div>
           </div>
@@ -46,9 +46,9 @@ import { RouterLink } from '@angular/router';
           <!-- Price & CTA -->
           <div class="pt-6 border-t border-slate-700/50">
             <div class="flex justify-between items-center mb-6">
-                <div>
-                  <p class="text-xs text-slate-500 uppercase font-bold tracking-widest">Base Price</p>
-                  <p class="text-2xl font-black text-indigo-400 font-mono">฿{{ template.base_price }}<span class="text-sm font-normal text-slate-500">/sq.unit</span></p>
+                 <div>
+                  <p class="text-xs text-v-muted dark:text-slate-500 uppercase font-black tracking-widest mb-1">Base Price</p>
+                  <p class="text-2xl font-black text-amount-green font-mono">฿{{ template.base_price }}<span class="text-sm font-normal text-v-muted dark:text-slate-500">/sq.unit</span></p>
                 </div>
             </div>
             <a [routerLink]="['/design', template.id]" class="btn btn-primary w-full py-4 group-hover:scale-[1.02]">
@@ -71,8 +71,14 @@ export class TemplatesComponent implements OnInit {
   templates = signal<any[]>([]);
 
   ngOnInit() {
-    this.templateService.getAll().subscribe(res => {
-      if (res.success) this.templates.set(res.data);
+    this.templateService.getAll().subscribe({
+      next: (res) => {
+        console.log('Templates response:', res);
+        if (res.success) this.templates.set(res.data);
+      },
+      error: (err) => {
+        console.error('Error fetching templates:', err);
+      }
     });
   }
 }
