@@ -47,7 +47,7 @@ import { Router, RouterLink } from '@angular/router';
           
           <p class="text-center text-v-muted dark:text-slate-400 text-sm font-bold">
             Don't have an account? 
-            <a routerLink="/register" class="text-indigo-700 dark:text-indigo-400 font-black hover:underline">Create one here</a>
+            <a routerLink="/register" [style.color]="'#ec4899'" class="font-black hover:underline transition-colors">Create one here</a>
           </p>
         </form>
       </div>
@@ -75,12 +75,15 @@ export class LoginComponent {
     this.loading = true;
     this.error = '';
 
-    this.authService.login(this.loginForm.value).subscribe({
-      next: () => this.router.navigate(['/']),
-      error: (err) => {
-        this.error = err.message || 'Login failed. Please check your credentials.';
-        this.loading = false;
-      }
-    });
+    // Simulate network delay for premium feel
+    setTimeout(() => {
+      this.authService.login(this.loginForm.value).subscribe({
+        next: () => this.router.navigate(['/']),
+        error: (err) => {
+          this.error = err.message || 'Login failed. Please check your credentials.';
+          this.loading = false;
+        }
+      });
+    }, 1500);
   }
 }

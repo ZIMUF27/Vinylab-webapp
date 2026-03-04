@@ -61,7 +61,12 @@ async function main() {
         }
     ];
 
+    // Clean up existing data to avoid foreign key constraints
+    await prisma.payment.deleteMany();
+    await prisma.order.deleteMany();
+    await prisma.design.deleteMany();
     await prisma.template.deleteMany();
+
     await prisma.template.createMany({ data: templates });
 
     console.log('Seed data created successfully');

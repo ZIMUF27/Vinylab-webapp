@@ -32,3 +32,6 @@ Thumbs.db
 # Database
 prisma/dev.db
 prisma/migrations/
+
+# Uploads
+backend/uploads/

@@ -4,6 +4,8 @@ import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { TemplateService } from '../../services/template.service';
 import { DesignService } from '../../services/design.service';
+import { UploadService } from '../../services/upload.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-design-editor',
@@ -43,14 +45,19 @@ import { DesignService } from '../../services/design.service';
 
             <!-- Real-time Preview Sign -->
             <div
-              class="relative flex items-center justify-center p-6 transition-all duration-300 shadow-2xl rounded"
+              class="relative flex flex-col items-center justify-center p-6 transition-all duration-300 shadow-2xl rounded overflow-hidden"
               [style.backgroundColor]="designForm.get('color')?.value"
               [style.width]="previewWidth + 'px'"
               [style.height]="previewHeight + 'px'"
               [style.maxWidth]="'90%'"
               [style.maxHeight]="'80%'"
             >
-              <span class="text-white font-bold text-center break-words mix-blend-difference"
+              <!-- Uploaded Image Preview -->
+              <img *ngIf="designForm.get('design_file')?.value" 
+                   [src]="getFullUrl(designForm.get('design_file')?.value)"
+                   class="absolute inset-0 w-full h-full object-cover">
+
+              <span *ngIf="showText" class="relative z-10 text-white font-bold text-center break-words drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
                     [style.fontSize]="previewFontSize + 'px'">
                 {{ designForm.get('text_content')?.value || 'YOUR TEXT' }}
               </span>
@@ -140,12 +147,53 @@ import { DesignService } from '../../services/design.service';
                 </div>
               </div>
 
-              <!-- Text Content -->
+              <!-- Image Upload -->
               <div class="space-y-2">
-                <label class="text-sm font-black text-v-muted dark:text-slate-300">Sign Text</label>
-                <textarea formControlName="text_content"
-                          class="form-input !h-28 resize-none text-v-secondary dark:text-white"
+                <label class="text-sm font-black text-v-muted dark:text-slate-300">Background Image (Optional)</label>
+                <div class="flex flex-col gap-3">
+                  <input type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden" #fileInput>
+                  <button type="button" (click)="fileInput.click()" class="btn btn-outline py-3 text-xs w-full flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    {{ designForm.get('design_file')?.value ? 'Change Image' : 'Upload Image (PNG/JPG)' }}
+                  </button>
+                  <div *ngIf="uploading" class="text-xs text-indigo-500 font-bold animate-pulse">Uploading image...</div>
+                  <div *ngIf="designForm.get('design_file')?.value" class="flex items-center justify-between p-2 bg-indigo-500/10 rounded-lg">
+                    <span class="text-[10px] text-indigo-400 font-bold truncate max-w-[150px]">Image Uploaded</span>
+                    <button type="button" (click)="removeImage()" class="text-red-400 hover:text-red-500">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Text Content -->
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <label class="text-sm font-black text-v-muted dark:text-slate-300">Sign Text</label>
+                  <button type="button" 
+                          (click)="toggleText()"
+                          class="flex items-center gap-2 px-3 py-1 rounded-lg text-[10px] font-black uppercase transition-all"
+                          [class.bg-indigo-500/20]="showText"
+                          [class.text-indigo-400]="showText"
+                          [class.bg-slate-500/20]="!showText"
+                          [class.text-slate-400]="!showText">
+                    <div class="w-2 h-2 rounded-full" [class.bg-indigo-500]="showText" [class.bg-slate-500]="!showText"></div>
+                    {{ showText ? 'Text Enabled' : 'Text Disabled' }}
+                  </button>
+                </div>
+                
+                <textarea *ngIf="showText"
+                          formControlName="text_content"
+                          class="form-input !h-28 resize-none text-v-secondary dark:text-white animate-in slide-in-from-top-2"
                           placeholder="Type your sign text..."></textarea>
+                
+                <div *ngIf="!showText" class="p-4 bg-slate-100 dark:bg-slate-800/40 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 text-center">
+                  <p class="text-[10px] text-v-muted font-bold uppercase italic">No text will be printed on this sign</p>
+                </div>
               </div>
 
               <!-- Submit -->
@@ -156,18 +204,18 @@ import { DesignService } from '../../services/design.service';
                   class="btn btn-primary w-full py-4 text-base font-bold"
                   [disabled]="designForm.invalid || loading"
                 >
-                  <span *ngIf="!loading" class="flex items-center justify-center gap-2">
+                  <span *ngIf="!loading && !uploading" class="flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     Finish &amp; Order
                   </span>
-                  <span *ngIf="loading" class="flex items-center justify-center gap-2">
+                  <span *ngIf="loading || uploading" class="flex items-center justify-center gap-2">
                     <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Processing...
+                    {{ uploading ? 'Uploading...' : 'Processing...' }}
                   </span>
                 </button>
               </div>
@@ -200,9 +248,12 @@ export class DesignEditorComponent implements OnInit {
   router = inject(Router);
   templateService = inject(TemplateService);
   designService = inject(DesignService);
+  uploadService = inject(UploadService);
 
   template: any;
   loading = false;
+  uploading = false;
+  showText = true;
   error = '';
   sidebarOpen = true;
   designForm!: FormGroup;
@@ -224,8 +275,52 @@ export class DesignEditorComponent implements OnInit {
       width: [this.template.min_width, [Validators.required, Validators.min(this.template.min_width), Validators.max(this.template.max_width)]],
       height: [this.template.min_height, [Validators.required, Validators.min(this.template.min_height), Validators.max(this.template.max_height)]],
       color: ['#6366f1'],
-      text_content: ['Your Content Here', Validators.required]
+      text_content: ['Your Content Here'],
+      design_file: [null]
     });
+  }
+
+  toggleText() {
+    this.showText = !this.showText;
+    if (!this.showText) {
+      this.designForm.patchValue({ text_content: '' });
+    } else {
+      this.designForm.patchValue({ text_content: 'Your Content Here' });
+    }
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    this.uploading = true;
+    this.error = '';
+
+    this.uploadService.upload(file).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.designForm.patchValue({ design_file: res.filePath });
+        }
+        this.uploading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to upload image. Max 5MB.';
+        this.uploading = false;
+      }
+    });
+  }
+
+  removeImage() {
+    this.designForm.patchValue({ design_file: null });
+  }
+
+  getFullUrl(path: string): string {
+    if (!path) return '';
+    // If it's a relative path starting with /uploads, prepend the API URL
+    if (path.startsWith('/uploads')) {
+      return `${environment.apiUrl.replace('/api', '')}${path}`;
+    }
+    return path;
   }
 
   /** Scale preview box proportionally to fit canvas */
@@ -263,22 +358,25 @@ export class DesignEditorComponent implements OnInit {
       ...this.designForm.value
     };
 
-    this.designService.create(payload).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.router.navigate(['/order-confirm', res.data.id]);
+    // Simulate network delay for premium feel
+    setTimeout(() => {
+      this.designService.create(payload).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.router.navigate(['/order-confirm', res.data.id]);
+          }
+        },
+        error: (err) => {
+          if (err.status === 401) {
+            this.error = 'Session expired. Please login again.';
+          } else if (err.status === 403) {
+            this.error = 'Access denied. Invalid credentials.';
+          } else {
+            this.error = err.error?.message || 'Failed to save design. Please try again.';
+          }
+          this.loading = false;
         }
-      },
-      error: (err) => {
-        if (err.status === 401) {
-          this.error = 'Session expired. Please login again.';
-        } else if (err.status === 403) {
-          this.error = 'Access denied. Invalid credentials.';
-        } else {
-          this.error = err.error?.message || 'Failed to save design. Please try again.';
-        }
-        this.loading = false;
-      }
-    });
+      });
+    }, 1500);
   }
 }

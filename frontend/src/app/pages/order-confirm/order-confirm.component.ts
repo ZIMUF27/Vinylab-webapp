@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DesignService } from '../../services/design.service';
 import { OrderService } from '../../services/order.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-order-confirm',
@@ -32,10 +33,15 @@ import { OrderService } from '../../services/order.service';
             <div class="space-y-6">
                 <p class="text-[10px] uppercase font-black tracking-[0.2em] text-v-muted">Design Summary</p>
                 <div 
-                  class="w-full aspect-video rounded-xl flex items-center justify-center p-4 border border-white/5 shadow-inner"
+                  class="w-full aspect-video rounded-xl flex items-center justify-center p-4 border border-white/5 shadow-inner relative overflow-hidden"
                   [style.backgroundColor]="design.color"
                 >
-                  <span class="text-white text-xl font-bold text-center break-words mix-blend-difference">
+                  <!-- Uploaded Image Preview -->
+                  <img *ngIf="design.design_file" 
+                       [src]="getFullUrl(design.design_file)"
+                       class="absolute inset-0 w-full h-full object-cover">
+
+                  <span *ngIf="design.text_content" class="relative z-10 text-white text-xl font-bold text-center break-words drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
                     {{ design.text_content }}
                   </span>
                 </div>
@@ -120,20 +126,31 @@ export class OrderConfirmComponent implements OnInit {
     }
   }
 
+  getFullUrl(path: string): string {
+    if (!path) return '';
+    if (path.startsWith('/uploads')) {
+      return `${environment.apiUrl.replace('/api', '')}${path}`;
+    }
+    return path;
+  }
+
   placeOrder() {
     this.loading = true;
     this.error = '';
 
-    this.orderService.create(this.design.id).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.router.navigate(['/payment', res.data.id]);
+    // Simulate network delay for premium feel
+    setTimeout(() => {
+      this.orderService.create(this.design.id).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.router.navigate(['/payment', res.data.id]);
+          }
+        },
+        error: (err) => {
+          this.error = err.error?.message || 'Failed to place order';
+          this.loading = false;
         }
-      },
-      error: (err) => {
-        this.error = err.error?.message || 'Failed to place order';
-        this.loading = false;
-      }
-    });
+      });
+    }, 1500);
   }
 }

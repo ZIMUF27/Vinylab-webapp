@@ -52,7 +52,7 @@ import { Router, RouterLink } from '@angular/router';
           
           <p class="text-center text-v-muted dark:text-slate-400 text-sm font-bold">
             Already have an account? 
-            <a routerLink="/login" class="text-indigo-700 dark:text-indigo-400 font-black hover:underline">Log in</a>
+            <a routerLink="/login" [style.color]="'#ec4899'" class="font-black hover:underline transition-colors">Log in</a>
           </p>
         </form>
       </div>

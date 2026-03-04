@@ -1,7 +1,7 @@
 import prisma from '../prisma/client';
 
 export class DesignService {
-    async create(userId: string, data: { template_id: string; width: number; height: number; color: string; text_content: string }) {
+    async create(userId: string, data: { template_id: string; width: number; height: number; color: string; text_content: string; design_file?: string }) {
         const template = await prisma.template.findUnique({
             where: { id: data.template_id }
         });
@@ -29,6 +29,7 @@ export class DesignService {
                 height: data.height,
                 color: data.color,
                 text_content: data.text_content,
+                design_file: data.design_file,
                 price_calculated,
                 status: 'draft'
             }
