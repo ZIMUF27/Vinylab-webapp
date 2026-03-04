@@ -33,7 +33,7 @@ export class AuthService {
             where: { email: data.email },
         });
 
-        if (!user) {
+        if (!user || !user.password_hash) {
             throw { status: 401, message: 'Invalid credentials' };
         }
 
