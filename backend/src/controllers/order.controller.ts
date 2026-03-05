@@ -42,4 +42,13 @@ export class OrderController {
             res.status(400).json({ success: false, message: error.message });
         }
     }
+
+    async delete(req: AuthRequest, res: Response) {
+        try {
+            await orderService.delete(req.params.id);
+            res.json({ success: true, message: 'Order deleted successfully' });
+        } catch (error: any) {
+            res.status(error.status || 500).json({ success: false, message: error.message });
+        }
+    }
 }

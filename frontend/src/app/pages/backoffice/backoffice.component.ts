@@ -5,6 +5,7 @@ import { OrderService } from '../../services/order.service';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
+import { NotificationService } from '../../services/notification.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -190,6 +191,15 @@ import { environment } from '../../../environments/environment';
                      <option value="completed" class="bg-slate-900 text-white">COMPLETED</option>
                      <option value="shipped" class="bg-slate-900 text-white">SHIPPED OUT</option>
                    </select>
+                   <button 
+                     (click)="deleteOrder(order.id)"
+                     class="mt-2 w-full py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-red-500/20 flex items-center justify-center gap-2"
+                   >
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                     </svg>
+                     Delete Order
+                   </button>
                 </td>
               </tr>
               <tr *ngIf="orders().length === 0">
@@ -356,6 +366,7 @@ export class BackofficeComponent implements OnInit {
   private orderService = inject(OrderService);
   authService = inject(AuthService);
   themeService = inject(ThemeService);
+  notificationService = inject(NotificationService);
 
   activeTab = 'dashboard';
   stats = signal<any>(null);
@@ -392,7 +403,26 @@ export class BackofficeComponent implements OnInit {
         if (index !== -1) {
           currentOrders[index].status = newStatus;
           this.orders.set([...currentOrders]);
+          this.notificationService.success(`Order status updated to ${newStatus.replace('_', ' ')}`);
         }
+      }
+    });
+  }
+
+  async deleteOrder(id: string) {
+    const ok = await this.notificationService.confirm({
+      title: 'Delete Order',
+      message: 'Are you sure you want to permanently delete this order? This action will remove all records and reset the design.',
+      confirmText: 'Delete Permanently',
+      type: 'danger'
+    });
+
+    if (!ok) return;
+
+    this.orderService.delete(id).subscribe(res => {
+      if (res.success) {
+        this.orders.set(this.orders().filter(o => o.id !== id));
+        this.notificationService.success('Order deleted successfully');
       }
     });
   }

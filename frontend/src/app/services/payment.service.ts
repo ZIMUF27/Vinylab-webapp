@@ -11,6 +11,7 @@ export class PaymentService {
     constructor(private http: HttpClient) { }
 
     create(data: any) {
+        // If data is FormData, send it directly, otherwise HttpClient will handle JSON
         return this.http.post<any>(this.apiUrl, data);
     }
 

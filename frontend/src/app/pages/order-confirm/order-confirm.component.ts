@@ -84,14 +84,16 @@ import { environment } from '../../../environments/environment';
               (click)="placeOrder()" 
               [disabled]="loading"
             >
-              <span *ngIf="!loading">Confirm & Proceed to Payment</span>
-              <span *ngIf="loading">Creating Order...</span>
-              <svg *ngIf="!loading" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <span>Confirm & Proceed to Payment</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </button>
             <a [routerLink]="['/design', design.template.id]" class="btn btn-outline py-5">
               Change Design
+            </a>
+            <a [routerLink]="['/templates']" class="btn btn-ghost py-5 text-red-500 font-bold">
+              Cancel & Exit
             </a>
           </div>
 
@@ -115,7 +117,6 @@ export class OrderConfirmComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private designService = inject(DesignService);
-  private orderService = inject(OrderService);
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -135,22 +136,6 @@ export class OrderConfirmComponent implements OnInit {
   }
 
   placeOrder() {
-    this.loading = true;
-    this.error = '';
-
-    // Simulate network delay for premium feel
-    setTimeout(() => {
-      this.orderService.create(this.design.id).subscribe({
-        next: (res) => {
-          if (res.success) {
-            this.router.navigate(['/payment', res.data.id]);
-          }
-        },
-        error: (err) => {
-          this.error = err.error?.message || 'Failed to place order';
-          this.loading = false;
-        }
-      });
-    }, 1500);
+    this.router.navigate(['/payment', this.design.id], { queryParams: { type: 'design' } });
   }
 }

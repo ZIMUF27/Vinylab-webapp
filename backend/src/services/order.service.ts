@@ -75,4 +75,35 @@ export class OrderService {
             data: { status }
         });
     }
+
+    async delete(id: string) {
+        const order = await prisma.order.findUnique({
+            where: { id },
+            include: { design: true }
+        });
+
+        if (!order) {
+            throw { status: 404, message: 'Order not found' };
+        }
+
+        return prisma.$transaction(async (tx) => {
+            // Delete associated payment if exists
+            await tx.payment.deleteMany({
+                where: { order_id: id }
+            });
+
+            // Delete order
+            await tx.order.delete({
+                where: { id }
+            });
+
+            // Revert design status to 'draft' so it can be ordered again or edited
+            await tx.design.update({
+                where: { id: order.design_id },
+                data: { status: 'draft' }
+            });
+
+            return { success: true };
+        });
+    }
 }

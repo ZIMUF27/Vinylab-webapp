@@ -1,17 +1,22 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { ToastContainerComponent } from './components/ui/toast-container.component';
+import { ConfirmModalComponent } from './components/ui/confirm-modal.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent],
+  imports: [RouterOutlet, NavbarComponent, ToastContainerComponent, ConfirmModalComponent],
   template: `
     <app-navbar></app-navbar>
 
     <div class="page-wrapper">
       <router-outlet></router-outlet>
     </div>
+
+    <app-toast-container></app-toast-container>
+    <app-confirm-modal></app-confirm-modal>
 
     <footer class="site-footer">
       <p class="text-slate-800 dark:text-slate-400 font-bold">

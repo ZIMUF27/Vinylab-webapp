@@ -12,5 +12,6 @@ router.get('/my', authenticateJWT, orderController.getMyOrders);
 // Staff, Admin, and Dev
 router.get('/', authenticateJWT, roleGuard(['staff', 'admin', 'dev']), orderController.getAll);
 router.patch('/:id/status', authenticateJWT, roleGuard(['staff', 'admin', 'dev']), orderController.updateStatus);
+router.delete('/:id', authenticateJWT, roleGuard(['admin', 'dev']), orderController.delete);
 
 export default router;

@@ -8,7 +8,13 @@ export class PaymentController {
     async create(req: AuthRequest, res: Response) {
         try {
             if (!req.user) return res.status(401).json({ success: false, message: 'Unauthorized' });
-            const payment = await paymentService.create(req.user.id, req.body);
+
+            const paymentData = {
+                ...req.body,
+                payment_slip: req.file ? `/uploads/${req.file.filename}` : null
+            };
+
+            const payment = await paymentService.create(req.user.id, paymentData);
             res.status(201).json({ success: true, data: payment });
         } catch (error: any) {
             res.status(error.status || 500).json({ success: false, message: error.message });

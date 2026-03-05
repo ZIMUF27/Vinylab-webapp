@@ -25,4 +25,8 @@ export class OrderService {
     updateStatus(id: string, status: string) {
         return this.http.patch<any>(`${this.apiUrl}/${id}/status`, { status });
     }
+
+    delete(id: string) {
+        return this.http.delete<any>(`${this.apiUrl}/${id}`);
+    }
 }

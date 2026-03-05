@@ -2,6 +2,7 @@ import { Component, inject, signal, HostListener } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
+import { NotificationService } from '../../services/notification.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -91,7 +92,7 @@ import { CommonModule } from '@angular/common';
               Hi, {{ authService.getUserName() }}
             </span>
             <div style="width:1px;height:24px;background:var(--nav-divider);" class="hidden lg:block"></div>
-            <button (click)="showLogoutConfirm.set(true)" class="btn btn-outline" style="padding:0.5rem 1.25rem;font-size:0.8125rem;">
+            <button (click)="logout()" class="btn btn-outline" style="padding:0.5rem 1.25rem;font-size:0.8125rem;">
               Logout
             </button>
           </ng-container>
@@ -160,7 +161,7 @@ import { CommonModule } from '@angular/common';
             <a routerLink="/backoffice" (click)="mobileOpen.set(false)" class="navbar-link block navbar-link--admin">Backoffice</a>
           </ng-container>
           <div class="divider"></div>
-          <button (click)="showLogoutConfirm.set(true); mobileOpen.set(false)" class="btn btn-outline w-full mt-1">Logout</button>
+          <button (click)="logout(); mobileOpen.set(false)" class="btn btn-outline w-full mt-1">Logout</button>
         </ng-container>
         <ng-container *ngIf="!authService.isLoggedIn()">
           <div class="divider"></div>
@@ -170,31 +171,26 @@ import { CommonModule } from '@angular/common';
       </div>
     </nav>
 
-    <!-- LOGOUT CONFIRMATION MODAL -->
-    <div *ngIf="showLogoutConfirm()" class="fixed inset-0 z-[200] flex items-center justify-center p-6 animate-in fade-in duration-300">
-      <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" (click)="showLogoutConfirm.set(false)"></div>
-      <div class="glass-card w-full max-w-sm relative z-10 animate-in zoom-in-95 duration-300 text-center space-y-6">
-        <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-        </div>
-        <div>
-          <h3 class="text-xl font-black text-v-dark dark:text-white mb-2">Logout Confirmation</h3>
-          <p class="text-v-secondary dark:text-slate-400 text-sm font-bold">Are you sure you want to exit your safe session?</p>
-        </div>
-        <div class="flex gap-3">
-          <button (click)="showLogoutConfirm.set(false)" class="btn btn-outline flex-grow">Cancel</button>
-          <button (click)="authService.logout(); showLogoutConfirm.set(false)" class="btn btn-primary bg-red-500 hover:bg-red-600 border-none flex-grow">Logout</button>
-        </div>
-      </div>
-    </div>
   `
 })
 export class NavbarComponent {
   authService = inject(AuthService);
   themeService = inject(ThemeService);
+  notificationService = inject(NotificationService);
   mobileOpen = signal(false);
-  showLogoutConfirm = signal(false);
+
+  async logout() {
+    const ok = await this.notificationService.confirm({
+      title: 'Logout Confirmation',
+      message: 'Are you sure you want to exit your safe session?',
+      confirmText: 'Logout Now',
+      type: 'danger'
+    });
+
+    if (ok) {
+      this.authService.logout();
+      this.notificationService.success('Logged out successfully');
+    }
+  }
 }
 
