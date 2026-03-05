@@ -87,10 +87,17 @@ export class OrderService {
     }
 
     delete(id: string): Observable<any> {
+        // First delete related Payment records, then delete the Order
         return from(this.supabaseService.client
-            .from(this.TABLE_NAME)
+            .from('Payment')
             .delete()
-            .eq('id', id)).pipe(
+            .eq('order_id', id)).pipe(
+                switchMap(() => {
+                    return from(this.supabaseService.client
+                        .from(this.TABLE_NAME)
+                        .delete()
+                        .eq('id', id));
+                }),
                 map(res => {
                     if (res.error) throw res.error;
                     return { success: true, message: 'Order deleted' };
