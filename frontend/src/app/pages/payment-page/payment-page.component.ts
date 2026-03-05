@@ -182,8 +182,16 @@ export class PaymentPageComponent implements OnInit {
         this.designService.getById(this.orderId).subscribe((res: any) => {
           if (res.success) this.price = res.data.price_calculated;
         });
+      } else {
+        this.orderService.getAll().subscribe((res: any) => {
+          if (res.success) {
+            const order = res.data.find((o: any) => o.id === this.orderId);
+            if (order) this.price = order.total_price;
+          }
+        });
       }
     }
+
   }
 
   onFileSelected(event: any) {
@@ -198,27 +206,45 @@ export class PaymentPageComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    const formData = new FormData();
-    formData.append('payment_method', this.paymentForm.get('payment_method')?.value || '');
-    formData.append('slip', this.selectedFile);
+    const executePayment = (finalOrderId: string) => {
+      const formData = new FormData();
+      formData.append('payment_method', this.paymentForm.get('payment_method')?.value || '');
+      formData.append('payment_slip', this.selectedFile!);
+      formData.append('order_id', finalOrderId);
+      formData.append('amount', this.price.toString());
+
+      this.paymentService.create(formData).subscribe({
+        next: (res: any) => {
+          if (res.success) {
+            this.notificationService.success('Payment slip submitted successfully! We will verify it shortly.');
+            this.router.navigate(['/my-orders']);
+          }
+        },
+        error: (err: any) => {
+          console.error('Payment Error:', err);
+          this.error = err.message || 'Payment failed. Please try again.';
+          this.loading = false;
+        }
+      });
+    };
 
     if (this.type === 'design') {
-      formData.append('design_id', this.orderId);
-    } else {
-      formData.append('order_id', this.orderId);
-    }
-
-    this.paymentService.create(formData).subscribe({
-      next: (res: any) => {
-        if (res.success) {
-          this.notificationService.success('Payment slip submitted successfully! We will verify it shortly.');
-          this.router.navigate(['/my-orders']);
+      // Create order first
+      this.orderService.create(this.orderId).subscribe({
+        next: (res: any) => {
+          if (res.success) {
+            executePayment(res.data.id);
+          }
+        },
+        error: (err: any) => {
+          console.error('Order Creation Error:', err);
+          this.error = 'Failed to create order. Please try again.';
+          this.loading = false;
         }
-      },
-      error: (err: any) => {
-        this.error = err.error?.message || 'Payment failed';
-        this.loading = false;
-      }
-    });
+      });
+    } else {
+      executePayment(this.orderId);
+    }
   }
+
 }
