@@ -304,7 +304,8 @@ export class DesignEditorComponent implements OnInit {
         this.uploading = false;
       },
       error: (err) => {
-        this.error = 'Failed to upload image. Max 5MB.';
+        console.error('Upload error:', err);
+        this.error = err.message || 'Failed to upload image. Please check Supabase Storage settings.';
         this.uploading = false;
       }
     });
@@ -316,7 +317,10 @@ export class DesignEditorComponent implements OnInit {
 
   getFullUrl(path: string): string {
     if (!path) return '';
-    // If it's a relative path starting with /uploads, prepend the API URL
+    // If it's already a full URL (Supabase Public URL), return it
+    if (path.startsWith('http')) return path;
+
+    // Legacy support for local uploads (if any)
     if (path.startsWith('/uploads')) {
       return `${environment.apiUrl.replace('/api', '')}${path}`;
     }
@@ -355,7 +359,8 @@ export class DesignEditorComponent implements OnInit {
 
     const payload = {
       template_id: this.template.id,
-      ...this.designForm.value
+      ...this.designForm.value,
+      price_calculated: this.calculatePrice() // Important: Supabase needs this field
     };
 
     // Simulate network delay for premium feel
@@ -367,12 +372,13 @@ export class DesignEditorComponent implements OnInit {
           }
         },
         error: (err) => {
+          console.error('Save design error:', err);
           if (err.status === 401) {
             this.error = 'Session expired. Please login again.';
           } else if (err.status === 403) {
-            this.error = 'Access denied. Invalid credentials.';
+            this.error = 'Access denied. Please check RLS Policies in Supabase.';
           } else {
-            this.error = err.error?.message || 'Failed to save design. Please try again.';
+            this.error = err.message || err.error?.message || 'Failed to save design. Please double check if "Design" table exists.';
           }
           this.loading = false;
         }
