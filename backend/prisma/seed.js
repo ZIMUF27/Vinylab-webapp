@@ -61,13 +61,14 @@ async function main() {
         }
     ];
 
-    // Clean up existing data to avoid foreign key constraints
-    await prisma.payment.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.design.deleteMany();
-    await prisma.template.deleteMany();
-
-    await prisma.template.createMany({ data: templates });
+    // Use upsert for templates to be safe on redeploy
+    for (const template of templates) {
+        await prisma.template.upsert({
+            where: { name: template.name },
+            update: template,
+            create: template
+        });
+    }
 
     console.log('Seed data created successfully');
 }
