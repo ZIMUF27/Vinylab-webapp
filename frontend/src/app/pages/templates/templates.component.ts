@@ -15,7 +15,7 @@ import { RouterLink } from '@angular/router';
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" *ngIf="!loading(); else skeleton">
-        <ng-container *ngIf="templates().length > 0; else emptyState">
+        <ng-container *ngIf="templates().length > 0">
           <div *ngFor="let template of templates()" class="glass-card group hover:border-indigo-500/50 transition-all duration-300 flex flex-col h-full">
             <!-- Card Header & Body -->
             <div class="flex-grow">
@@ -59,13 +59,6 @@ import { RouterLink } from '@angular/router';
           </div>
         </ng-container>
       </div>
-
-      <ng-template #emptyState>
-        <div class="col-span-full py-20 text-center glass-card">
-          <p class="text-xl font-bold text-v-muted">No design templates available at the moment.</p>
-          <p class="text-sm text-v-soft mt-2">Check back later or contact admin.</p>
-        </div>
-      </ng-template>
 
       <ng-template #skeleton>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
