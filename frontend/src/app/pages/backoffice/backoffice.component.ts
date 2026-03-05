@@ -374,6 +374,10 @@ export class BackofficeComponent implements OnInit {
   selectedOrder = signal<any>(null);
 
   ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
     this.dashboardService.getStats().subscribe(res => {
       if (res.success) this.stats.set(res.data);
     });
@@ -422,6 +426,8 @@ export class BackofficeComponent implements OnInit {
       if (res.success) {
         this.orders.set(this.orders().filter(o => o.id !== id));
         this.notificationService.success('Order deleted successfully');
+        // Refresh dashboard stats after deletion
+        this.loadData();
       }
     });
   }
