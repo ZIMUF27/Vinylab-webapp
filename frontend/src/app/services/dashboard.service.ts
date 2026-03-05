@@ -10,21 +10,42 @@ export class DashboardService {
     constructor(private supabaseService: SupabaseService) { }
 
     getStats(): Observable<any> {
-        // Run multiple counts in parallel
+        const now = new Date();
+        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+        const startOfYear = new Date(now.getFullYear(), 0, 1).toISOString();
+
         return forkJoin({
             totalOrders: from(this.supabaseService.client.from('Order').select('*', { count: 'exact', head: true })),
-            totalRevenue: from(this.supabaseService.client.from('Order').select('total_price')),
-            totalDesign: from(this.supabaseService.client.from('Design').select('*', { count: 'exact', head: true })),
+            allOrders: from(this.supabaseService.client.from('Order').select('total_price, created_at')),
+            totalCustomers: from(this.supabaseService.client.from('Design').select('user_id')),
             totalTemplates: from(this.supabaseService.client.from('Template').select('*', { count: 'exact', head: true }))
         }).pipe(
             map(res => {
-                const revenue = (res.totalRevenue.data || []).reduce((acc: number, curr: any) => acc + curr.total_price, 0);
+                const orders = res.allOrders.data || [];
+                const totalRevenue = orders.reduce((acc: number, curr: any) => acc + curr.total_price, 0);
+                const dailyRevenue = orders
+                    .filter((o: any) => o.created_at >= startOfDay)
+                    .reduce((acc: number, curr: any) => acc + curr.total_price, 0);
+                const monthlyRevenue = orders
+                    .filter((o: any) => o.created_at >= startOfMonth)
+                    .reduce((acc: number, curr: any) => acc + curr.total_price, 0);
+                const yearlyRevenue = orders
+                    .filter((o: any) => o.created_at >= startOfYear)
+                    .reduce((acc: number, curr: any) => acc + curr.total_price, 0);
+
+                // Count unique customers from designs
+                const uniqueUserIds = new Set((res.totalCustomers.data || []).map((d: any) => d.user_id));
+
                 return {
                     success: true,
                     data: {
                         totalOrders: res.totalOrders.count || 0,
-                        totalRevenue: revenue,
-                        totalDesign: res.totalDesign.count || 0,
+                        totalRevenue,
+                        dailyRevenue,
+                        monthlyRevenue,
+                        yearlyRevenue,
+                        totalCustomers: uniqueUserIds.size,
                         totalTemplates: res.totalTemplates.count || 0
                     }
                 };
@@ -34,19 +55,33 @@ export class DashboardService {
 
 
     getCustomers(): Observable<any> {
-        // Supabase doesn't have a direct "distinct" on a column with object retrieval easily without RPC 
-        // but we can query designs and group them or query auth users if we have access (usually we don't in client side for all users)
-        // Let's query orders with user info via designs
+        // Query designs to get unique user_ids - no User table exists,
+        // so we just return user_id info from Design table
         return from(this.supabaseService.client
             .from('Design')
-            .select('user_id, user:User(id, name, email, phone)')
-            // This is a bit of a hack to get unique users, in real app you might want a User table
+            .select('user_id, created_at')
         ).pipe(
             map(res => {
-                const uniqueUsers = Array.from(new Map((res.data || []).map((item: any) => [item.user_id, item.user])).values());
-                return { success: true, data: uniqueUsers };
+                // Group by user_id and count designs
+                const userMap = new Map<string, any>();
+                (res.data || []).forEach((item: any) => {
+                    if (!userMap.has(item.user_id)) {
+                        userMap.set(item.user_id, {
+                            id: item.user_id,
+                            name: 'Customer',
+                            email: item.user_id.slice(0, 8) + '...',
+                            phone: null,
+                            created_at: item.created_at,
+                            _count: { designs: 1 }
+                        });
+                    } else {
+                        userMap.get(item.user_id)._count.designs++;
+                    }
+                });
+                return { success: true, data: Array.from(userMap.values()) };
             })
         );
     }
 }
+
 

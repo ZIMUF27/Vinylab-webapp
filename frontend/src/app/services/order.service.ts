@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { SupabaseService } from './supabase.service';
 import { AuthService } from './auth.service';
 
@@ -16,8 +16,6 @@ export class OrderService {
     ) { }
 
     create(designId: string): Observable<any> {
-        // First get the design to calculate total_price (or assume it's passed)
-        // For simplicity, let's assume we fetch design first or create order with direct pricing
         return from(this.supabaseService.client
             .from('Design')
             .select('price_calculated')
@@ -63,9 +61,10 @@ export class OrderService {
             .from(this.TABLE_NAME)
             .select(`
                 *,
-                design:Design(*, user:User(*), template:Template(*)),
+                design:Design(*, template:Template(*)),
                 payment:Payment(*)
-            `)).pipe(
+            `)
+            .order('created_at', { ascending: false })).pipe(
                 map(res => {
                     if (res.error) throw res.error;
                     return { success: true, data: res.data };
@@ -99,6 +98,4 @@ export class OrderService {
             );
     }
 }
-
-import { switchMap } from 'rxjs/operators';
 

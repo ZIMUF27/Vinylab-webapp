@@ -161,13 +161,12 @@ import { environment } from '../../../environments/environment';
                 <td class="px-8 py-6">
                   <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-black text-v-secondary dark:text-slate-300 border border-slate-200 dark:border-transparent">
-                      {{ (order.design.user.name || 'U').charAt(0) }}
+                      {{ (order.design.user_id || 'U').charAt(0).toUpperCase() }}
                     </div>
                     <div>
-                      <div class="text-sm font-black text-v-secondary dark:text-slate-100">{{ order.design.user.name }}</div>
-                      <div class="text-[10px] text-v-muted dark:text-slate-400 font-bold italic flex items-center gap-2">
-                        {{ order.design.user.email }}
-                        <span *ngIf="order.design.user.phone" class="text-indigo-400 border-l border-white/10 pl-2">Tel: {{ order.design.user.phone }}</span>
+                      <div class="text-sm font-black text-v-secondary dark:text-slate-100">Customer</div>
+                      <div class="text-[10px] text-v-muted dark:text-slate-400 font-bold italic font-mono">
+                        ID: {{ order.design.user_id?.slice(0, 8) }}
                       </div>
                     </div>
                   </div>
@@ -258,9 +257,9 @@ import { environment } from '../../../environments/environment';
               <span class="text-v-muted text-xs font-mono">#{{ selectedOrder().id.slice(0, 8) }}</span>
             </h3>
             <p class="text-[10px] font-black text-v-muted uppercase tracking-widest flex items-center gap-2">
-              Ordered by {{ selectedOrder().design.user.name }}
-              <span *ngIf="selectedOrder().design.user.phone" class="text-indigo-400 normal-case border-l border-white/10 pl-2 font-mono">
-                {{ selectedOrder().design.user.phone }}
+              Ordered by Customer
+              <span class="text-indigo-400 normal-case border-l border-white/10 pl-2 font-mono">
+                ID: {{ selectedOrder().design.user_id?.slice(0, 8) }}
               </span>
             </p>
           </div>
