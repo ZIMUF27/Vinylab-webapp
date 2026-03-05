@@ -46,7 +46,7 @@ model User {
 
 model Template {
   id            String   @id @default(uuid())
-  name          String
+  name          String   @unique
   min_width     Float
   max_width     Float
   min_height    Float
