@@ -1,27 +1,27 @@
 import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { environment } from '../../environments/environment';
-import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
-import { from, Observable, of } from 'rxjs';
-import { map, tap, catchError } from 'rxjs/operators';
+import { User } from '@supabase/supabase-js';
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { SupabaseService } from './supabase.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    private supabase: SupabaseClient;
     currentUser = signal<User | null>(null);
 
-    constructor(private router: Router) {
-        this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-
+    constructor(
+        private router: Router,
+        private supabaseService: SupabaseService
+    ) {
         // Check current session
-        this.supabase.auth.getSession().then(({ data: { session } }) => {
+        this.supabaseService.auth.getSession().then(({ data: { session } }) => {
             this.currentUser.set(session?.user ?? null);
         });
 
         // Listen for auth changes
-        this.supabase.auth.onAuthStateChange((_event, session) => {
+        this.supabaseService.auth.onAuthStateChange((_event, session) => {
             this.currentUser.set(session?.user ?? null);
             if (!session) {
                 this.router.navigate(['/login']);
@@ -30,7 +30,7 @@ export class AuthService {
     }
 
     register(data: any): Observable<any> {
-        return from(this.supabase.auth.signUp({
+        return from(this.supabaseService.auth.signUp({
             email: data.email,
             password: data.password,
             options: {
@@ -49,7 +49,7 @@ export class AuthService {
     }
 
     login(credentials: any): Observable<any> {
-        return from(this.supabase.auth.signInWithPassword({
+        return from(this.supabaseService.auth.signInWithPassword({
             email: credentials.email,
             password: credentials.password
         })).pipe(
@@ -61,7 +61,7 @@ export class AuthService {
     }
 
     logout() {
-        this.supabase.auth.signOut().then(() => {
+        this.supabaseService.auth.signOut().then(() => {
             this.currentUser.set(null);
             this.router.navigate(['/login']);
         });
@@ -89,6 +89,7 @@ export class AuthService {
     }
 
     getToken(): Promise<string | null> {
-        return this.supabase.auth.getSession().then(res => res.data.session?.access_token || null);
+        return this.supabaseService.auth.getSession().then(res => res.data.session?.access_token || null);
     }
 }
+

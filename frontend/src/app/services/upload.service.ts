@@ -1,19 +1,32 @@
-import { environment } from "../../environments/environment";
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { SupabaseService } from './supabase.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UploadService {
-    private apiUrl = `${environment.apiUrl}/upload`;
+    private readonly BUCKET_NAME = 'designs';
 
-    constructor(private http: HttpClient) { }
+    constructor(private supabaseService: SupabaseService) { }
 
     upload(file: File): Observable<{ success: boolean, filePath: string }> {
-        const formData = new FormData();
-        formData.append('file', file);
-        return this.http.post<{ success: boolean, filePath: string }>(this.apiUrl, formData);
+        const filePath = `design_${Date.now()}_${file.name}`;
+
+        return from(this.supabaseService.storage
+            .from(this.BUCKET_NAME)
+            .upload(filePath, file)).pipe(
+                map(res => {
+                    if (res.error) throw res.error;
+
+                    const publicUrl = this.supabaseService.storage
+                        .from(this.BUCKET_NAME)
+                        .getPublicUrl(filePath).data.publicUrl;
+
+                    return { success: true, filePath: publicUrl };
+                })
+            );
     }
 }
+
